@@ -4,9 +4,15 @@ import { Send } from "lucide-react";
 
 interface Message {
   id: number;
-  role: "user" | "demon";
+  role: "user" | "ai";
   content: string;
   time: string;
+  memory?: string;
+}
+
+interface DemonPageProps {
+  messages: Message[];
+  setMessages: (messages: Message[] | ((prev: Message[]) => Message[])) => void;
 }
 
 const Stars = () => {
@@ -79,8 +85,7 @@ const Stars = () => {
   );
 };
 
-export default function DemonPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
+export default function DemonPage({ messages, setMessages }: DemonPageProps) {
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -127,7 +132,7 @@ export default function DemonPage() {
 
       const demonMessage: Message = {
         id: Date.now() + 1,
-        role: "demon",
+        role: "ai",
         content: data.reply,
         time: new Date().toLocaleTimeString("zh-CN", {
           hour: "2-digit",

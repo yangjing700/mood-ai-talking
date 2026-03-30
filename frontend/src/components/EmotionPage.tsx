@@ -18,6 +18,11 @@ interface EmotionState {
   last_updated: string;
 }
 
+interface EmotionPageProps {
+  messages: Message[];
+  setMessages: (messages: Message[] | ((prev: Message[]) => Message[])) => void;
+}
+
 const Stars = () => {
   const stars = Array.from({ length: 100 }, (_, i) => ({
     id: i,
@@ -99,15 +104,7 @@ const FloatingParticles = () => {
   );
 };
 
-export default function EmotionPage() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      role: "ai",
-      content: "嘿，今天过得怎么样？",
-      time: "19:32",
-    },
-  ]);
+export default function EmotionPage({ messages, setMessages }: EmotionPageProps) {
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [emotionState, setEmotionState] = useState<EmotionState>({
@@ -173,7 +170,12 @@ export default function EmotionPage() {
       }),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    console.log("发送用户消息:", userMessage);
+    setMessages((prev) => {
+      const newMessages = [...prev, userMessage];
+      console.log("更新后的消息列表:", newMessages);
+      return newMessages;
+    });
     setInputText("");
     setIsLoading(true);
 
@@ -190,6 +192,7 @@ export default function EmotionPage() {
       if (!response.ok) throw new Error("发送失败");
 
       const data = await response.json();
+      console.log("收到后端响应:", data);
 
       const aiMessage: Message = {
         id: Date.now() + 1,
@@ -199,12 +202,22 @@ export default function EmotionPage() {
           hour: "2-digit",
           minute: "2-digit",
         }),
-        memory: data.memory,
+        memory: data.memory || undefined,
       };
 
-      setMessages((prev) => [...prev, aiMessage]);
-      setEmotionState(data.emotion_state);
+      console.log("添加AI消息:", aiMessage);
+      setMessages((prev) => {
+        const newMessages = [...prev, aiMessage];
+        console.log("更新后的消息列表:", newMessages);
+        return newMessages;
+      });
 
+      // 更新情绪状态（仅在emotion模式下有）
+      if (data.emotion_state) {
+        setEmotionState(data.emotion_state);
+      }
+
+      // 如果有新记忆，重新加载记忆列表
       if (data.memory) {
         loadMemories();
       }

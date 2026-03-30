@@ -4,9 +4,15 @@ import { Send } from "lucide-react";
 
 interface Message {
   id: number;
-  role: "user" | "angel";
+  role: "user" | "ai";
   content: string;
   time: string;
+  memory?: string;
+}
+
+interface AngelPageProps {
+  messages: Message[];
+  setMessages: (messages: Message[] | ((prev: Message[]) => Message[])) => void;
 }
 
 const SunRays = () => {
@@ -88,8 +94,7 @@ const SunRays = () => {
   );
 };
 
-export default function AngelPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
+export default function AngelPage({ messages, setMessages }: AngelPageProps) {
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -136,7 +141,7 @@ export default function AngelPage() {
 
       const angelMessage: Message = {
         id: Date.now() + 1,
-        role: "angel",
+        role: "ai",
         content: data.reply,
         time: new Date().toLocaleTimeString("zh-CN", {
           hour: "2-digit",
@@ -179,7 +184,7 @@ export default function AngelPage() {
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl font-bold text-amber-900 mb-2"
+            className="text-4xl font-bold text-amber-800 mb-2 drop-shadow-sm"
           >
             ✨ 治愈小天使
           </motion.h1>
@@ -187,7 +192,7 @@ export default function AngelPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-amber-700 text-sm"
+            className="text-amber-700/90 text-sm font-medium drop-shadow-sm"
           >
             温暖陪伴，治愈心灵
           </motion.p>
