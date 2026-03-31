@@ -1,12 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import EmotionPage from "./components/EmotionPage";
 import DemonPage from "./components/DemonPage";
 import AngelPage from "./components/AngelPage";
 
-type Mode = "emotion" | "demon" | "angel";
+type Mode = "demon" | "angel";
 
-// 聊天消息接口
 interface Message {
   id: number;
   role: "user" | "ai";
@@ -17,28 +15,16 @@ interface Message {
 
 // 每种模式的独立聊天记录
 interface ChatHistory {
-  emotion: Message[];
   demon: Message[];
   angel: Message[];
 }
 
 export default function App() {
-  const [mode, setMode] = useState<Mode>("emotion");
+  const [mode, setMode] = useState<Mode>("demon");
   const [isLoading, setIsLoading] = useState(true);
 
   // 每种模式独立的聊天记录
   const [chatHistory, setChatHistory] = useState<ChatHistory>({
-    emotion: [
-      {
-        id: 1,
-        role: "ai",
-        content: "嘿，今天过得怎么样？",
-        time: new Date().toLocaleTimeString("zh-CN", {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      },
-    ],
     demon: [],
     angel: [],
   });
@@ -95,21 +81,6 @@ export default function App() {
     <div className="w-full h-screen overflow-hidden relative">
       {/* 页面内容 */}
       <AnimatePresence mode="wait">
-        {mode === "emotion" && (
-          <motion.div
-            key="emotion"
-            className="absolute inset-0"
-            initial={{ opacity: 0, scale: 1.02 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.5, ease: "easeInOut" }}
-          >
-            <EmotionPage 
-              messages={chatHistory.emotion}
-              setMessages={(newMessages) => updateMessages("emotion", newMessages)}
-            />
-          </motion.div>
-        )}
         {mode === "demon" && (
           <motion.div
             key="demon"
@@ -153,36 +124,6 @@ export default function App() {
           layout
           transition={{ duration: 0.35 }}
         >
-          {/* 情绪模式 */}
-          <button
-            onClick={() => setMode("emotion")}
-            className={`relative px-4 py-2 rounded-full text-sm transition-all duration-300 select-none ${
-              mode === "emotion" ? "" : "hover:bg-white/10"
-            }`}
-          >
-            {mode === "emotion" && (
-              <motion.div
-                layoutId="tab-pill"
-                className="absolute inset-0 rounded-full"
-                style={{
-                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                }}
-                transition={{ duration: 0.35, type: "spring", bounce: 0.25 }}
-              />
-            )}
-            <span className={`relative z-10 flex items-center gap-2 ${
-              mode === "angel" ? "text-amber-800 font-medium" : "text-white"
-            }`}>
-              <span>💜</span>
-              <span>情绪模式</span>
-            </span>
-          </button>
-
-          {/* 分隔线 */}
-          <div className={`w-px self-stretch my-1 ${
-            mode === "angel" ? "bg-amber-200/50" : "bg-white/20"
-          }`} />
-
           {/* 恶魔模式 */}
           <button
             onClick={() => setMode("demon")}

@@ -15,6 +15,46 @@ interface AngelPageProps {
   setMessages: (messages: Message[] | ((prev: Message[]) => Message[])) => void;
 }
 
+const AngelCharacter = () => (
+  <div className="relative w-full h-full flex items-end justify-center">
+    {/* 温暖金色发光效果 */}
+    <div
+      className="absolute pointer-events-none"
+      style={{
+        bottom: "10%",
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: "85%",
+        height: "70%",
+        background:
+          "radial-gradient(ellipse, rgba(251,191,36,0.28) 0%, rgba(253,230,138,0.12) 45%, transparent 70%)",
+        filter: "blur(28px)",
+      }}
+    />
+    {/* 角色图片 - 上下浮动效果 */}
+    <motion.div
+      className="relative w-full h-full flex items-end justify-center"
+      animate={{ y: [0, -10, 0] }}
+      transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+    >
+      <img
+        src="/angel-character.png"
+        alt="治愈小天使"
+        style={{
+          filter:
+            "sepia(0.38) hue-rotate(-18deg) saturate(1.25) brightness(1.08) drop-shadow(0 0 32px rgba(251,191,36,0.55))",
+          objectFit: "contain",
+          width: "100%",
+          height: "100%",
+          maxHeight: "100%",
+          transform: "scaleX(-1) rotate(8deg)",
+          transformOrigin: "center bottom",
+        }}
+      />
+    </motion.div>
+  </div>
+);
+
 const SunRays = () => {
   const rays = Array.from({ length: 14 }, (_, i) => ({
     id: i,
@@ -58,6 +98,7 @@ const SunRays = () => {
           transition={{ duration: r.duration, repeat: Infinity, ease: "easeInOut" }}
         />
       ))}
+
       {/* 浮动光粒子 */}
       {Array.from({ length: 18 }, (_, i) => ({
         id: i,
@@ -89,6 +130,31 @@ const SunRays = () => {
             ease: "easeInOut",
           }}
         />
+      ))}
+
+      {/* 金色闪光星星 */}
+      {Array.from({ length: 10 }, (_, i) => ({
+        id: i,
+        x: Math.random() * 80 + 5,
+        y: Math.random() * 70 + 10,
+        size: Math.random() * 6 + 8,
+        duration: Math.random() * 2 + 2.5,
+        delay: Math.random() * 4,
+      })).map((sp) => (
+        <motion.div
+          key={`sp-${sp.id}`}
+          className="absolute select-none"
+          style={{
+            left: `${sp.x}%`,
+            top: `${sp.y}%`,
+            fontSize: `${sp.size}px`,
+            color: "rgba(251,191,36,0.6)",
+          }}
+          animate={{ opacity: [0, 0.8, 0], scale: [0.5, 1.1, 0.5], rotate: [0, 90, 180] }}
+          transition={{ duration: sp.duration, repeat: Infinity, delay: sp.delay }}
+        >
+          ✦
+        </motion.div>
       ))}
     </div>
   );
@@ -147,6 +213,7 @@ export default function AngelPage({ messages, setMessages }: AngelPageProps) {
           hour: "2-digit",
           minute: "2-digit",
         }),
+        memory: data.memory || undefined,
       };
 
       setMessages((prev) => [...prev, angelMessage]);
@@ -173,111 +240,232 @@ export default function AngelPage({ messages, setMessages }: AngelPageProps) {
   };
 
   return (
-    <div className="w-full h-screen relative overflow-hidden bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
-      {/* 背景阳光 */}
+    <div
+      className="relative w-full h-screen overflow-hidden"
+      style={{
+        background: "linear-gradient(140deg, #fffde4 0%, #fef9d7 30%, #fff8cc 65%, #fef5c0 100%)",
+      }}
+    >
       <SunRays />
 
-      {/* 主内容区 */}
-      <div className="relative z-10 h-full flex flex-col">
-        {/* 顶部标题 */}
-        <div className="px-6 pt-20 pb-6 text-center">
-          <motion.h1
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl font-bold text-amber-800 mb-2 drop-shadow-sm"
-          >
-            ✨ 治愈小天使
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-amber-700/90 text-sm font-medium drop-shadow-sm"
-          >
-            温暖陪伴，治愈心灵
-          </motion.p>
-        </div>
+      {/* 温暖光晕 */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          right: "8%",
+          top: "15%",
+          width: "320px",
+          height: "220px",
+          background: "radial-gradient(ellipse, rgba(251,191,36,0.12) 0%, transparent 70%)",
+          filter: "blur(40px)",
+        }}
+      />
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          left: "5%",
+          bottom: "20%",
+          width: "260px",
+          height: "200px",
+          background: "radial-gradient(ellipse, rgba(253,230,138,0.12) 0%, transparent 70%)",
+          filter: "blur(30px)",
+        }}
+      />
 
-        {/* 聊天消息区 */}
-        <div className="flex-1 px-6 pb-4 overflow-y-auto">
-          <div className="max-w-3xl mx-auto space-y-4">
-            <AnimatePresence>
-              {messages.map((message) => (
+      <div className="relative z-10 flex h-full">
+        {/* 左侧：聊天框 */}
+        <div className="flex-1 h-full flex items-center py-16 pl-8 pr-4">
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.15 }}
+            className="relative w-full h-full"
+          >
+            {/* 对话框主体 */}
+            <div
+              className="w-full h-full rounded-[2rem] border flex flex-col overflow-hidden"
+              style={{
+                borderColor: "rgba(251,191,36,0.35)",
+                background:
+                  "linear-gradient(145deg, rgba(255,253,232,0.75) 0%, rgba(254,249,219,0.8) 100%)",
+                backdropFilter: "blur(20px)",
+                boxShadow:
+                  "0 0 80px rgba(251,191,36,0.14), 0 8px 32px rgba(251,191,36,0.1), inset 0 0 60px rgba(255,251,204,0.3)",
+              }}
+            >
+              {/* 头部 */}
+              <div
+                className="px-6 py-4 flex items-center gap-3 shrink-0"
+                style={{ borderBottom: "1px solid rgba(251,191,36,0.25)" }}
+              >
                 <motion.div
-                  key={message.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                  className="w-2.5 h-2.5 rounded-full bg-yellow-400"
+                  animate={{ opacity: [1, 0.4, 1], scale: [1, 1.15, 1] }}
+                  transition={{ duration: 2.5, repeat: Infinity }}
+                />
+                <span
+                  className="text-amber-600/90 text-sm tracking-[0.2em] uppercase select-none"
+                  style={{ fontFamily: "serif" }}
                 >
-                  <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                      message.role === "user"
-                        ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white"
-                        : "bg-white text-gray-900 shadow-sm border border-amber-100"
-                    }`}
-                  >
-                    <div className="text-sm leading-relaxed">{message.content}</div>
-                    <div className="text-xs mt-1 opacity-70">{message.time}</div>
-                    {message.memory && (
-                      <div className="mt-2 text-xs bg-amber-500/20 rounded px-2 py-1 border border-amber-400/30">
-                        💕 记得你：{message.memory}
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-            {isLoading && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex justify-start"
+                  治愈小天使 · 心里话
+                </span>
+              </div>
+
+              {/* 消息区域 */}
+              <div
+                className="flex-1 overflow-y-auto px-5 py-5 space-y-4"
+                style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(251,191,36,0.3) transparent" }}
               >
-                <div className="bg-white rounded-2xl px-4 py-3 shadow-sm border border-amber-100">
-                  <div className="flex gap-1">
-                    <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce" />
-                    <div
-                      className="w-2 h-2 bg-orange-400 rounded-full animate-bounce"
-                      style={{ animationDelay: "0.1s" }}
-                    />
-                    <div
-                      className="w-2 h-2 bg-yellow-400 rounded-full animate-bounce"
-                      style={{ animationDelay: "0.2s" }}
-                    />
-                  </div>
+                <AnimatePresence initial={false}>
+                  {messages.length === 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="text-center mt-10 select-none"
+                    >
+                      <div className="text-4xl mb-4">🌸</div>
+                      <p className="text-amber-600/80 text-sm leading-relaxed">
+                        嗨～我在这里陪着你呢
+                      </p>
+                      <p className="text-amber-500/60 text-xs mt-2">
+                        有什么想说的，都可以告诉我哦 ✨
+                      </p>
+                    </motion.div>
+                  )}
+
+                  {messages.map((message) => (
+                    <motion.div
+                      key={message.id}
+                      initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ duration: 0.3 }}
+                      className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
+                    >
+                      {message.role === "ai" && (
+                        <div className="w-7 h-7 rounded-full bg-yellow-100 border border-yellow-300/60 flex items-center justify-center text-xs mr-2 mt-1 shrink-0 select-none">
+                          😇
+                        </div>
+                      )}
+                      <div
+                        className={`max-w-[78%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+                          message.role === "user" ? "rounded-tr-sm" : "rounded-tl-sm"
+                        }`}
+                        style={
+                          message.role === "user"
+                            ? {
+                                background:
+                                  "linear-gradient(135deg, rgba(251,191,36,0.65) 0%, rgba(245,158,11,0.55) 100%)",
+                                border: "1px solid rgba(251,191,36,0.4)",
+                                color: "#78350f",
+                              }
+                            : {
+                                background: "rgba(255,251,204,0.8)",
+                                border: "1px solid rgba(251,191,36,0.3)",
+                                color: "#92400e",
+                              }
+                        }
+                      >
+                        <div className="text-sm leading-relaxed">{message.content}</div>
+                        <div className="text-xs mt-1 opacity-70">{message.time}</div>
+                        {message.memory && (
+                          <div className="mt-2 text-xs bg-amber-500/20 rounded px-2 py-1 border border-amber-400/30">
+                            💕 记得你：{message.memory}
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  ))}
+
+                  {isLoading && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="flex justify-start"
+                    >
+                      <div className="w-7 h-7 rounded-full bg-yellow-100 border border-yellow-300/60 flex items-center justify-center text-xs mr-2 mt-1 shrink-0">
+                        😇
+                      </div>
+                      <div
+                        className="px-4 py-3 rounded-2xl rounded-tl-sm"
+                        style={{
+                          background: "rgba(255,251,204,0.8)",
+                          border: "1px solid rgba(251,191,36,0.3)",
+                        }}
+                      >
+                        <div className="flex gap-1.5 items-center">
+                          {[0, 1, 2].map((i) => (
+                            <motion.div
+                              key={i}
+                              className="w-1.5 h-1.5 rounded-full bg-amber-400"
+                              animate={{ y: [0, -5, 0] }}
+                              transition={{
+                                duration: 0.55,
+                                repeat: Infinity,
+                                delay: i * 0.18,
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* 输入框 */}
+              <div
+                className="px-4 pb-4 pt-3 shrink-0"
+                style={{ borderTop: "1px solid rgba(251,191,36,0.22)" }}
+              >
+                <div className="flex gap-3 items-end">
+                  <textarea
+                    value={inputText}
+                    onChange={(e) => setInputText(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    onInput={autoResize}
+                    placeholder="有什么想说的，都可以和我分享～"
+                    rows={1}
+                    className="flex-1 rounded-2xl px-4 py-3 text-sm resize-none focus:outline-none transition-colors"
+                    style={{
+                      background: "rgba(255,253,230,0.8)",
+                      border: "1px solid rgba(251,191,36,0.35)",
+                      color: "#78350f",
+                    }}
+                  />
+                  <motion.button
+                    whileHover={{ scale: 1.08 }}
+                    whileTap={{ scale: 0.92 }}
+                    onClick={handleSend}
+                    disabled={!inputText.trim() || isLoading}
+                    className="p-3.5 rounded-xl disabled:opacity-35 transition-colors shrink-0"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgba(251,191,36,0.8) 0%, rgba(245,158,11,0.7) 100%)",
+                      border: "1px solid rgba(251,191,36,0.5)",
+                      color: "#78350f",
+                    }}
+                  >
+                    <Send size={17} />
+                  </motion.button>
                 </div>
-              </motion.div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
 
-        {/* 输入区 */}
-        <div className="px-6 pb-6">
-          <div className="max-w-3xl mx-auto">
-            <div className="bg-white rounded-2xl p-2 shadow-md border border-amber-200 flex items-end gap-2">
-              <textarea
-                value={inputText}
-                onChange={(e) => {
-                  setInputText(e.target.value);
-                  autoResize(e);
-                }}
-                onKeyDown={handleKeyDown}
-                placeholder="想说点什么..."
-                className="flex-1 bg-transparent text-gray-900 placeholder-gray-400 resize-none outline-none px-4 py-3 text-sm min-h-[44px]"
-                rows={1}
-                style={{ maxHeight: "120px" }}
-              />
-              <button
-                onClick={handleSend}
-                disabled={!inputText.trim() || isLoading}
-                className="w-11 h-11 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 flex items-center justify-center text-white disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity"
-              >
-                <Send className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
+        {/* 右侧：天使角色 */}
+        <div className="w-[38%] md:w-[36%] h-full flex items-end justify-center pb-0 px-4 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="h-[90%] w-auto max-w-[280px]"
+          >
+            <AngelCharacter />
+          </motion.div>
         </div>
       </div>
     </div>
