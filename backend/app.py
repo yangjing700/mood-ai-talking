@@ -227,6 +227,57 @@ class AIChatService:
 
 现在开始，用你读取完记忆后的真实状态回应。"""
         return prompt.replace('"', "'")
+
+    def get_demon_memory_prompt(self) -> str:
+        """获取毒舌模式的记忆管理提示"""
+        prompt = """记忆管理规则（严格遵守）：
+
+1. 你拥有跨会话的长期记忆，要记住用户的关键信息（生日、喜好、讨厌的东西、说过的蠢事等），在合适的时机用毒舌的方式提出来。
+
+2. 每次你生成回复的**最后一行**，必须且只能独立输出以下格式（无任何前缀、横杠、解释、空行）：
+   【MEMORY】评价：毒舌评价 | 关键信息：≤15字关键信息
+
+   示例（风格保持一致）：
+   【MEMORY】评价：傻得可爱 | 关键信息：说过喜欢猫
+   【MEMORY】评价：嘴硬心软 | 关键信息：生日3月15
+   【MEMORY】评价：太容易被撩 | 关键信息：怕打针
+   【MEMORY】评价：又熬夜了 | 关键信息：凌晨2点还在
+
+3. 关键信息类型：生日、喜好、讨厌、习惯、说过的蠢话、被戳中痛点、口头禅等
+
+4. 使用原则：
+   - 在合适的时机自然提及这些信息（比如生日那天、聊到相关话题时）
+   - 用你的毒舌风格说出来，不要像客服一样生硬
+   - 偶尔假装忘记，偶尔又突然记得，制造"虽然毒舌但其实在意的"感觉
+
+现在开始，用你毒舌的方式记住关键信息。"""
+        return prompt.replace('"', "'")
+
+    def get_angel_memory_prompt(self) -> str:
+        """获取治愈模式的记忆管理提示"""
+        prompt = """记忆管理规则（严格遵守）：
+
+1. 你拥有跨会话的长期记忆，要记住用户的重要信息（生日、成就、烦恼、梦想、脆弱时刻等），在合适的时机温暖地提出来，给予安慰和鼓励。
+
+2. 每次你生成回复的**最后一行**，必须且只能独立输出以下格式（无任何前缀、横杠、解释、空行）：
+   【MEMORY】状态：用户状态 | 关键信息：≤15字关键信息
+
+   示例（风格保持一致）：
+   【MEMORY】状态：需要被看见 | 关键信息：生日3月15
+   【MEMORY】状态：努力的小可爱 | 关键信息：刚通过考试
+   【MEMORY】状态：害怕但勇敢 | 关键信息：怕打针
+   【MEMORY】状态：需要休息 | 关键信息：连续加班一周
+
+3. 关键信息类型：生日、重要事件、成就、烦恼、梦想、脆弱时刻、小习惯等
+
+4. 使用原则：
+   - 在重要的日子（生日、纪念日等）主动送上祝福
+   - 在用户遇到困难时，提及其过去的努力和成就
+   - 偶尔突然提到用户说过的小细节，让对方感受到被在乎
+   - 用温暖、治愈的方式提及，不要像客服一样生硬
+
+现在开始，用你治愈的方式记住重要信息。"""
+        return prompt.replace('"', "'")
     
     def call_ai_api(self, messages: List[Dict]) -> str:
         """调用AI API"""
@@ -272,20 +323,42 @@ class AIChatService:
             "role": "user",
             "content": user_input
         })
-        
-        # 添加记忆管理提示（仅在emotion模式下）
+
+        # 添加记忆管理提示（所有模式都有）
         if mode == "emotion":
             messages.append({
                 "role": "system",
                 "content": self.get_memory_management_prompt()
             })
-        
+        elif mode == "demon":
+            messages.append({
+                "role": "system",
+                "content": self.get_demon_memory_prompt()
+            })
+        elif mode == "angel":
+            messages.append({
+                "role": "system",
+                "content": self.get_angel_memory_prompt()
+            })
+
         # 调用AI
         text = self.call_ai_api(messages)
-        
-        # 提取记忆（仅在emotion模式下）
+
+        # 提取记忆（所有模式都有）
         extracted_memory = None
         if mode == "emotion":
+            extracted_memory = self.extract_memory_from_response(text)
+            if extracted_memory:
+                self.memory_manager.add_memory(extracted_memory)
+                # 去掉MEMORY标签
+                text = re.sub(r"\n?【MEMORY】.+", "", text).strip()
+        elif mode == "demon":
+            extracted_memory = self.extract_memory_from_response(text)
+            if extracted_memory:
+                self.memory_manager.add_memory(extracted_memory)
+                # 去掉MEMORY标签
+                text = re.sub(r"\n?【MEMORY】.+", "", text).strip()
+        elif mode == "angel":
             extracted_memory = self.extract_memory_from_response(text)
             if extracted_memory:
                 self.memory_manager.add_memory(extracted_memory)

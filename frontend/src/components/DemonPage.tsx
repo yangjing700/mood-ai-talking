@@ -210,6 +210,11 @@ export default function DemonPage({ messages, setMessages }: DemonPageProps) {
                   >
                     <div className="text-sm leading-relaxed">{message.content}</div>
                     <div className="text-xs mt-1 opacity-70">{message.time}</div>
+                    {message.memory && (
+                      <div className="mt-2 text-xs bg-purple-500/20 rounded px-2 py-1 border border-purple-400/30">
+                        💾 记住你了：{message.memory}
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               ))}

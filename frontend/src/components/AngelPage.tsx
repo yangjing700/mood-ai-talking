@@ -219,6 +219,11 @@ export default function AngelPage({ messages, setMessages }: AngelPageProps) {
                   >
                     <div className="text-sm leading-relaxed">{message.content}</div>
                     <div className="text-xs mt-1 opacity-70">{message.time}</div>
+                    {message.memory && (
+                      <div className="mt-2 text-xs bg-amber-500/20 rounded px-2 py-1 border border-amber-400/30">
+                        💕 记得你：{message.memory}
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               ))}
