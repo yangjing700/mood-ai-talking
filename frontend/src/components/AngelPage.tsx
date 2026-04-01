@@ -273,7 +273,7 @@ export default function AngelPage({ messages, setMessages }: AngelPageProps) {
 
       <div className="relative z-10 flex h-full">
         {/* 左侧：聊天框 */}
-        <div className="flex-1 h-full flex items-center py-16 pl-8 pr-4">
+        <div className="flex-1 h-full flex items-center pt-24 pb-16 pl-8 pr-4">
           <motion.div
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
