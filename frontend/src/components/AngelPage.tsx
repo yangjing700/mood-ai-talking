@@ -46,8 +46,7 @@ const AngelCharacter = () => (
           objectFit: "contain",
           width: "100%",
           height: "100%",
-          maxHeight: "100%",
-          transform: "scaleX(-1) rotate(8deg)",
+          transform: "scaleX(-1) rotate(8deg) scale(1.15)",
           transformOrigin: "center bottom",
         }}
       />

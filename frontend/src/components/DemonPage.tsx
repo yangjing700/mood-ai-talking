@@ -275,6 +275,21 @@ export default function DemonPage({ messages, setMessages }: DemonPageProps) {
                 className="px-6 py-4 flex items-center gap-3 shrink-0"
                 style={{ borderBottom: "1px solid rgba(139,92,246,0.2)" }}
               >
+                {/* 恶魔三叉戟图标 - 使用图片（小尺寸） */}
+                <motion.div
+                  animate={{ rotate: [0, 5, 0, -5, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <img
+                    src="/trident.png"
+                    alt="恶魔三叉戟"
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      filter: "drop-shadow(0 0 4px rgba(220,38,38,0.5))",
+                    }}
+                  />
+                </motion.div>
                 <motion.div
                   className="w-2.5 h-2.5 rounded-full bg-purple-400"
                   animate={{ opacity: [1, 0.3, 1] }}
@@ -298,7 +313,22 @@ export default function DemonPage({ messages, setMessages }: DemonPageProps) {
                       exit={{ opacity: 0 }}
                       className="text-center mt-10 select-none"
                     >
-                      <div className="text-4xl mb-4">🔮</div>
+                      {/* 恶魔三叉戟图标 - 使用图片 */}
+                      <motion.div
+                        className="mb-4 flex justify-center"
+                        animate={{ y: [0, -5, 0] }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                      >
+                        <img
+                          src="/trident.png"
+                          alt="恶魔三叉戟"
+                          style={{
+                            width: "64px",
+                            height: "64px",
+                            filter: "drop-shadow(0 0 8px rgba(220,38,38,0.6))",
+                          }}
+                        />
+                      </motion.div>
                       <p className="text-purple-400/80 text-sm leading-relaxed">
                         嗯？终于鼓起勇气来找我了？
                       </p>
