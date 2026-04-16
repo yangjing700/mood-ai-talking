@@ -47,17 +47,27 @@ if not exist "frontend\package.json" (
 echo 📦 正在检查依赖...
 echo.
 
-REM 安装后端依赖（如果需要）
+REM 创建后端虚拟环境（如不存在）
 if not exist "backend\venv" (
-    echo 正在安装后端依赖...
+    echo 正在创建后端虚拟环境...
     cd backend
     py -m venv venv
-    call venv\Scripts\activate.bat
-    pip install -r requirements.txt
     cd ..
-    echo ✅ 后端依赖安装完成
-    echo.
 )
+
+REM 安装后端依赖（每次都检查更新）
+echo 📦 正在安装后端依赖...
+cd backend
+call venv\Scripts\activate.bat
+pip install -r requirements.txt --quiet
+if errorlevel 1 (
+    echo ⚠️ pip安装失败，尝试更新pip...
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt --quiet
+)
+cd ..
+echo ✅ 后端依赖安装完成
+echo.
 
 REM 安装前端依赖（如果需要）
 if not exist "frontend\node_modules" (

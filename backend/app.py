@@ -3,6 +3,7 @@ from flask_cors import CORS
 import json
 import re
 import requests
+import keyring
 from datetime import datetime
 from typing import Dict, List, Optional
 
@@ -10,12 +11,25 @@ app = Flask(__name__)
 CORS(app)
 
 # ========== 配置区 ==========
-API_KEY = "sk-8f5a9acc1ce74018916be7b056a26641"
+# 使用系统密钥环安全存储 API Key，不再硬编码
+KEYRING_SERVICE = "emotion_chat_ai"
+KEYRING_USERNAME = "dashscope_api_key"
 API_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
 MODEL_NAME = "qwen-plus-latest"
 MEMORY_FILE = "memory.json"
 MAX_MEMORY = 3  # 每次最多注入几条记忆
 # ===========================
+
+
+def get_api_key() -> str:
+    """从系统密钥环获取 API Key"""
+    api_key = keyring.get_password(KEYRING_SERVICE, KEYRING_USERNAME)
+    if not api_key:
+        raise RuntimeError(
+            "API Key 未找到！请先运行 `python setup_key.py` 设置 API Key。\n"
+            "设置命令：python backend/setup_key.py"
+        )
+    return api_key
 
 
 class EmotionManager:
@@ -287,12 +301,19 @@ class AIChatService:
         }
         
         headers = {
-            "Authorization": f"Bearer {API_KEY}",
+            "Authorization": f"Bearer {get_api_key()}",
             "Content-Type": "application/json"
         }
         
-        response = requests.post(API_URL, headers=headers, json=payload)
+        response = requests.post(API_URL, headers=headers, json=payload, timeout=30)
+        
+        if not response.ok:
+            raise Exception(f"API Error: {response.status_code} - {response.text}")
+        
         data = response.json()
+        
+        if "choices" not in data or len(data["choices"]) == 0:
+            raise Exception(f"API Response Error: {data}")
         
         return data["choices"][0]["message"]["content"]
     
@@ -437,4 +458,4 @@ if __name__ == "__main__":
     print("   - DELETE /api/memories - Clear memories")
     print("")
     
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
