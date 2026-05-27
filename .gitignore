@@ -64,3 +64,10 @@ backend/memory.json
 .env
 .env.local
 .env.*.local
+
+# Vite deps cache
+frontend/.vite/
+
+# Outdated helper scripts (contain local paths)
+install_keyring.bat
+install_venv_keyring.bat
